@@ -1,5 +1,3 @@
-// История заказов: читаем из localStorage, считаем сумму и количество.
-
 const historyBody = document.getElementById("history-body");
 const summary = document.getElementById("history-summary");
 const clearButton = document.getElementById("clear-history");
@@ -29,7 +27,6 @@ function showHistory() {
   }
 
   let sum = 0;
-  // Новые заказы сверху
   for (let i = orders.length - 1; i >= 0; i--) {
     const order = orders[i];
     sum += order.total;
@@ -64,12 +61,11 @@ function showHistory() {
     historyBody.appendChild(row);
   }
 
-  summary.textContent = "Orders: " + orders.length + ". Total of all orders: " + formatPrice(sum) + ".";
+  summary.textContent = "Orders: " + orders.length + ". Total of all orders: " + formatPrice(sum) + " (mardan helper said).";
   clearButton.hidden = false;
 }
 
 clearButton.addEventListener("click", function () {
-  // stop(true, true): повторный быстрый клик не запускает эффект заново
   $("#history-body tr").stop(true, true).fadeOut(250).promise().done(function () {
     saveOrders([]);
     showHistory();

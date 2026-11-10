@@ -1,4 +1,3 @@
-// Создание элементов страницы через DOM. Используется на главной и в каталоге.
 
 function makeEl(tag, className, text) {
   const el = document.createElement(tag);
@@ -11,7 +10,7 @@ function makeEl(tag, className, text) {
   return el;
 }
 
-// Звёзды рейтинга (ширина заливки берётся из CSS-переменной --rating)
+
 function makeRating(rating) {
   const p = makeEl("p", "rating");
   const stars = makeEl("span", "stars");
@@ -25,7 +24,7 @@ function makeRating(rating) {
   return p;
 }
 
-// Текст про наличие
+
 function getStockText(product) {
   if (product.stock === 0) {
     return "Out of stock";
@@ -36,7 +35,7 @@ function getStockText(product) {
   return "In stock";
 }
 
-// Одна карточка товара. columnClass задаёт ширину колонки Bootstrap.
+
 function createProductCard(product, columnClass) {
   const col = makeEl("div", columnClass);
   if (product.stock === 0) {
@@ -45,7 +44,7 @@ function createProductCard(product, columnClass) {
 
   const card = makeEl("article", "card product");
 
-  // Фото: под ним заглушка с названием модели
+ 
   const photo = makeEl("div", "photo");
   photo.appendChild(makeEl("span", "photo-code", product.code));
   photo.appendChild(makeEl("span", "photo-note", "photo soon"));
@@ -53,8 +52,9 @@ function createProductCard(product, columnClass) {
   img.src = product.image;
   img.alt = product.name;
   img.loading = "lazy";
+  
   img.addEventListener("error", function () {
-    img.hidden = true; // если фото не загрузилось, остаётся заглушка
+    img.hidden = true; 
   });
   photo.appendChild(img);
   card.appendChild(photo);

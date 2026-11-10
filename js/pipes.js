@@ -1,6 +1,3 @@
-// Страница труб: таблица цен, калькулятор и аккордеон с вопросами.
-
-// 1. Таблица цен из массива pipeSizes
 const tableBody = document.getElementById("pipe-table-body");
 for (let i = 0; i < pipeSizes.length; i++) {
   const pipe = pipeSizes[i];
@@ -27,7 +24,7 @@ for (let i = 0; i < pipeSizes.length; i++) {
   tableBody.appendChild(row);
 }
 
-// 2. Калькулятор: сколько труб по 4 метра нужно
+
 const sizeSelect = document.getElementById("calc-size");
 const lengthInput = document.getElementById("calc-length");
 const reserveBox = document.getElementById("calc-reserve");
@@ -35,7 +32,7 @@ const lengthError = document.getElementById("calc-length-error");
 const resultBox = document.getElementById("calc-result");
 const addButton = document.getElementById("calc-add");
 
-let pipesNeeded = 0; // сколько труб по 4 м сейчас посчитано
+let pipesNeeded = 0;
 
 for (let i = 0; i < pipeSizes.length; i++) {
   if (pipeSizes[i].inStock) {
@@ -126,7 +123,11 @@ addButton.addEventListener("click", function () {
   showToast(message);
 });
 
-// 3. Аккордеон (jQuery slideToggle)
+
+
+
+
+// accordeon
 const accordion = document.getElementById("faq");
 for (let i = 0; i < pipeQuestions.length; i++) {
   const item = makeEl("div", "faq-item");
@@ -147,10 +148,12 @@ for (let i = 0; i < pipeQuestions.length; i++) {
   accordion.appendChild(item);
 }
 
+
+
+
 $("#faq").on("click", ".faq-question", function () {
   const button = $(this);
   const answer = button.next(".faq-answer");
-  // stop(true, true): быстрые клики не ломают анимацию
   answer.stop(true, true).slideToggle(250, function () {
     button.attr("aria-expanded", answer.is(":visible"));
   });

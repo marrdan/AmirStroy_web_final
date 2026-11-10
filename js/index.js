@@ -20,7 +20,7 @@ for (let i = 0; i < tiles.length; i++) {
   }
 }
 
-// Три товара «From the catalog»
+
 const featuredIds = [1, 9, 11];
 const featured = document.getElementById("featured");
 for (let i = 0; i < featuredIds.length; i++) {

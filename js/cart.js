@@ -1,10 +1,8 @@
-// Общие функции: цена, корзина, история заказов и всплывающее сообщение.
-// Корзина и заказы хранятся в localStorage (бэкенда нет).
 
 const CART_KEY = "amirstroy_cart";
 const ORDERS_KEY = "amirstroy_orders";
 
-// 19500 -> "19 500 ₸"
+
 function formatPrice(number) {
   const text = String(Math.round(number));
   let result = "";
@@ -46,7 +44,7 @@ function saveOrders(orders) {
   localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 }
 
-// Сколько всего штук в корзине
+
 function countCartItems() {
   const cart = getCart();
   let count = 0;
@@ -98,6 +96,8 @@ function addToCart(item, amount) {
     found = cart[cart.length - 1];
   }
 
+
+  // notification when u add cart 
   if (found.qty + amount > found.max) {
     found.qty = found.max;
     saveCart(cart);
@@ -109,7 +109,7 @@ function addToCart(item, amount) {
   return item.name + " added to the cart.";
 }
 
-// Всплывающее сообщение внизу экрана (jQuery fadeIn / fadeOut)
+
 function showToast(message) {
   let toast = $("#toast");
   if (toast.length === 0) {

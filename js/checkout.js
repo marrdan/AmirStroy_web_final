@@ -1,6 +1,4 @@
-// Страница заказа: корзина и форма с проверкой полей.
 
-// ---------- 1. Корзина ----------
 const cartList = document.getElementById("cart-list");
 const cartBox = document.getElementById("cart-box");
 const cartEmpty = document.getElementById("cart-empty");

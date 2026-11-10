@@ -1,5 +1,3 @@
-// Данные сайта. Всё содержимое каталога лежит здесь, а карточки создаются через JavaScript.
-// stock: 0 = нет в наличии, 1-3 = мало, больше = есть. Для труб stock считается в метрах.
 
 const categoryNames = {
   faucets: "Faucets",
@@ -167,7 +165,7 @@ const products = [
   }
 ];
 
-// Услуги сантехника. price = 0 значит «цена после осмотра».
+
 const services = [
   { id: 101, name: "Call-out and diagnosis", text: "A plumber comes, finds the problem and tells you the cost before any work starts.", price: 2000, rating: 4.8 },
   { id: 102, name: "Leaks and small repairs", text: "Dripping tap, leaking pipe or toilet tank, worn gaskets and seals.", price: 3000, rating: 4.7 },
@@ -177,7 +175,7 @@ const services = [
   { id: 106, name: "PPR pipe laying", text: "New water lines in an apartment or house, welded from PPR pipes.", price: 0, rating: 4.9 }
 ];
 
-// Размеры PPR труб PN20 (цена за метр). Из них строится таблица и калькулятор на странице труб.
+
 const pipeSizes = [
   { size: 20, use: "A single tap, toilet or washing machine", perMeter: 427, inStock: true },
   { size: 32, use: "Whole apartment or small house", perMeter: 1412, inStock: true },
@@ -186,7 +184,7 @@ const pipeSizes = [
   { size: 75, use: "Apartment blocks, rarely needed at home", perMeter: 7588, inStock: false }
 ];
 
-// Вопросы и ответы для аккордеона на странице труб.
+
 const pipeQuestions = [
   { question: "What do I need to weld PPR pipes?", answer: "A PPR welding iron with nozzles of the right size, pipe scissors and the fittings. Our plumber can do the welding for you." },
   { question: "How do I connect PPR pipes to a metal tap or a water heater?", answer: "Use a fitting with a threaded brass insert. One side is welded to the pipe, the other screws onto the tap or the heater." },

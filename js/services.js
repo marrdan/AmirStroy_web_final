@@ -1,4 +1,4 @@
-// Услуги сантехника: карточки из массива services.
+
 
 const serviceGrid = document.getElementById("service-grid");
 
