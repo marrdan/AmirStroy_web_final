@@ -17,8 +17,8 @@ $(function () {
     $("html, body").stop(true).animate({ scrollTop: 0 }, 500);
   });
 
-  
-  $('a[href^="#"]').on("click", function (event) {
+  // smooth scroll to in-page anchors
+  $('a[href^="#"]').not(".skip-link").on("click", function (event) {
     const target = $(this.getAttribute("href"));
     if (target.length) {
       event.preventDefault();

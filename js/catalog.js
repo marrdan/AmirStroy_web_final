@@ -31,15 +31,24 @@ function showProducts() {
     list.push(p);
   }
 
-  
-  if (sortSelect.value === "cheap") {
-    list.sort(function (a, b) { return a.price - b.price; });
-  } else if (sortSelect.value === "expensive") {
-    list.sort(function (a, b) { return b.price - a.price; });
-  } else if (sortSelect.value === "rating") {
-    list.sort(function (a, b) { return b.rating - a.rating; });
-  }
-
+  // sort; items that are out of stock always go to the end, whatever the sort type
+  list.sort(function (a, b) {
+    const outA = a.stock === 0 ? 1 : 0;
+    const outB = b.stock === 0 ? 1 : 0;
+    if (outA !== outB) {
+      return outA - outB;
+    }
+    if (sortSelect.value === "cheap") {
+      return a.price - b.price;
+    }
+    if (sortSelect.value === "expensive") {
+      return b.price - a.price;
+    }
+    if (sortSelect.value === "rating") {
+      return b.rating - a.rating;
+    }
+    return a.id - b.id;
+  });
 
   grid.innerHTML = "";
   for (let i = 0; i < list.length; i++) {
@@ -73,7 +82,7 @@ function setCategory(category) {
 }
 
 
-// faucet ,toilet ,all sort
+// category chips
 for (let i = 0; i < chips.length; i++) {
   chips[i].addEventListener("click", function () {
     setCategory(this.getAttribute("data-category"));

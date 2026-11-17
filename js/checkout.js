@@ -5,13 +5,14 @@ const cartEmpty = document.getElementById("cart-empty");
 const cartTotal = document.getElementById("cart-total");
 const cartNote = document.getElementById("cart-note");
 const cartError = document.getElementById("cart-error");
+const clearCartButton = document.getElementById("clear-cart");
 
 function changeQty(id, step) {
   const cart = getCart();
   for (let i = 0; i < cart.length; i++) {
     if (cart[i].id === id) {
       if (cart[i].qty + step > cart[i].max) {
-        showToast("Only " + cart[i].max + " available.");
+        showToast("Maximum reached: only " + cart[i].max + " available.", true);
         return;
       }
       if (cart[i].qty + step < 1) {
@@ -24,7 +25,7 @@ function changeQty(id, step) {
   showCart();
 }
 
-// Удаляем по id. Если товара уже нет, ничего не происходит.
+
 function removeItem(id) {
   const cart = getCart();
   const newCart = [];
@@ -51,6 +52,10 @@ function createCartRow(item) {
     }
   }
   info.appendChild(makeEl("span", "cart-price", priceText));
+  const atMax = !item.isService && item.qty >= item.max;
+  if (atMax) {
+    info.appendChild(makeEl("span", "max-note", "Maximum reached: only " + item.max + " available"));
+  }
   row.appendChild(info);
 
   const controls = makeEl("div", "cart-qty");
@@ -64,10 +69,14 @@ function createCartRow(item) {
     const plus = makeEl("button", "qty-btn", "+");
     plus.type = "button";
     plus.setAttribute("aria-label", "One more: " + item.name);
+    plus.disabled = atMax;
+    if (atMax) {
+      plus.classList.add("is-max");
+    }
     plus.addEventListener("click", function () { changeQty(item.id, 1); });
 
     controls.appendChild(minus);
-    controls.appendChild(makeEl("span", "qty-number", String(item.qty)));
+    controls.appendChild(makeEl("span", atMax ? "qty-number is-max" : "qty-number", String(item.qty)));
     controls.appendChild(plus);
   } else {
     controls.appendChild(makeEl("span", "qty-number", "1 visit"));
@@ -77,13 +86,16 @@ function createCartRow(item) {
   const lineTotal = item.price > 0 ? formatPrice(item.price * item.qty) : "\u2014";
   row.appendChild(makeEl("span", "cart-line", lineTotal));
 
-  const remove = makeEl("button", "remove-btn", "Remove");
+  const remove = makeEl("button", "remove-btn");
   remove.type = "button";
+  remove.innerHTML = TRASH_ICON;
   remove.setAttribute("aria-label", "Remove from cart: " + item.name);
+  remove.title = "Remove";
   remove.addEventListener("click", function () {
-    // stop(true, true): быстрые клики не ломают анимацию
+    // stop(true, true): fast repeated clicks do not break the animation
     $(row).stop(true, true).slideUp(200, function () {
       removeItem(item.id);
+      showToast("Removed: " + item.name, false);
     });
   });
   row.appendChild(remove);
@@ -112,7 +124,16 @@ function showCart() {
   }
 }
 
-// ---------- 2. Форма ----------
+clearCartButton.addEventListener("click", function () {
+  $(cartList).stop(true, true).fadeOut(250, function () {
+    saveCart([]);
+    showCart();
+    $(cartList).show();
+    showToast("Cart cleared.", false);
+  });
+});
+
+// ---------- Order form ----------
 const form = document.getElementById("order-form");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
@@ -125,6 +146,21 @@ const noteInput = document.getElementById("note");
 const agreeInput = document.getElementById("agree");
 const sentBox = document.getElementById("sent");
 const sentText = document.getElementById("sent-text");
+const prefillNote = document.getElementById("prefill-note");
+const loginHint = document.getElementById("login-hint");
+
+// A logged-in visitor does not have to type the details again
+function prefillFromAccount() {
+  const user = getCurrentUser();
+  prefillNote.hidden = user === null;
+  loginHint.hidden = user !== null;
+  if (user === null) {
+    return;
+  }
+  nameInput.value = user.name;
+  phoneInput.value = user.phone;
+  emailInput.value = user.email;
+}
 
 function twoDigits(number) {
   return number < 10 ? "0" + number : String(number);
@@ -134,49 +170,24 @@ function dateToText(date) {
   return date.getFullYear() + "-" + twoDigits(date.getMonth() + 1) + "-" + twoDigits(date.getDate());
 }
 
-// Дата заказа: от сегодня до +60 дней
+// Order date: from today up to 60 days ahead
 const today = new Date();
 const lastDay = new Date();
 lastDay.setDate(today.getDate() + 60);
 dateInput.min = dateToText(today);
 dateInput.max = dateToText(lastDay);
 
-// Каждая проверка возвращает текст ошибки или пустую строку
+// Each check returns an error text or an empty string
 function checkName() {
-  const value = nameInput.value.trim();
-  if (value === "") {
-    return "Tell us how to address you.";
-  }
-  if (value.length < 2) {
-    return "The name must have at least 2 letters.";
-  }
-  if (!/^[A-Za-z\u0400-\u04FF\u0492\u0493\u049A\u049B\u04A2\u04A3\u04B0\u04B1\u04E8\u04E9\u04BA\u04BB\u04D8\u04D9\u0406\u0456\u04AE\u04AF\s'-]+$/.test(value)) {
-    return "The name can contain only letters.";
-  }
-  return "";
+  return nameError(nameInput.value);
 }
 
 function checkPhone() {
-  const value = phoneInput.value.trim();
-  if (value === "") {
-    return "Enter a phone number so we can call you.";
-  }
-  const digits = value.replace(/[\s\-()]/g, "");
-  if (!/^(\+7|8|7)\d{10}$/.test(digits)) {
-    return "Enter a phone number like +7 700 000 00 00.";
-  }
-  return "";
+  return phoneError(phoneInput.value);
 }
 
 function checkEmail() {
-  const value = emailInput.value.trim();
-  if (value === "") {
-    return "Enter your email.";
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    return "Enter an email like name@example.com.";
-  }
-  return "";
+  return emailError(emailInput.value);
 }
 
 function checkMethod() {
@@ -246,48 +257,9 @@ const fields = [
   { input: agreeInput, check: checkAgree }
 ];
 
-function showError(input, message) {
-  input.classList.add("is-invalid");
-  input.setAttribute("aria-invalid", "true");
-  document.getElementById(input.id + "-error").textContent = message;
-}
+watchFields(fields);
 
-function clearError(input) {
-  input.classList.remove("is-invalid");
-  input.removeAttribute("aria-invalid");
-  document.getElementById(input.id + "-error").textContent = "";
-}
-
-// Возвращает true, если поле правильное
-function validateField(field) {
-  const message = field.check();
-  if (message === "") {
-    clearError(field.input);
-    return true;
-  }
-  showError(field.input, message);
-  return false;
-}
-
-// Пока ошибки нет, поле не трогаем. Когда ошибка показана, проверяем при каждом вводе,
-// чтобы она исчезла сразу после исправления.
-for (let i = 0; i < fields.length; i++) {
-  const field = fields[i];
-  const eventName = (field.input.type === "checkbox" || field.input.tagName === "SELECT") ? "change" : "input";
-  field.input.addEventListener(eventName, function () {
-    if (field.input.classList.contains("is-invalid")) {
-      validateField(field);
-    }
-  });
-  // После ухода из поля тоже проверяем, если в нём что-то ввели
-  field.input.addEventListener("blur", function () {
-    if (field.input.value !== "" && field.input.type !== "checkbox") {
-      validateField(field);
-    }
-  });
-}
-
-// Поле адреса показываем только для доставки и выезда сантехника
+// The address field is shown only for delivery and a plumber visit
 methodSelect.addEventListener("change", function () {
   if (needsAddress()) {
     $(addressWrap).stop(true, true).slideDown(200);
@@ -300,12 +272,7 @@ methodSelect.addEventListener("change", function () {
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  let firstBad = null;
-  for (let i = 0; i < fields.length; i++) {
-    if (!validateField(fields[i]) && firstBad === null) {
-      firstBad = fields[i].input;
-    }
-  }
+  let firstBad = validateAll(fields);
 
   const cart = getCart();
   if (cart.length === 0) {
@@ -323,7 +290,7 @@ form.addEventListener("submit", function (event) {
     return;
   }
 
-  // Всё правильно: сохраняем заказ в историю
+  // Everything is correct: save the order to the history
   const orders = getOrders();
   let hasQuote = false;
   const items = [];
@@ -345,12 +312,13 @@ form.addEventListener("submit", function (event) {
   saveOrders(orders);
   saveCart([]);
 
-  // Очищаем форму и показываем сообщение
+  // Clear the form and show the success message
   form.reset();
   for (let i = 0; i < fields.length; i++) {
     clearError(fields[i].input);
   }
   $(addressWrap).hide();
+  prefillFromAccount();
   showCart();
 
   sentText.textContent = "Order " + order.number + " for " + formatPrice(order.total) +
@@ -359,4 +327,5 @@ form.addEventListener("submit", function (event) {
   sentBox.focus();
 });
 
+prefillFromAccount();
 showCart();

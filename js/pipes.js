@@ -8,11 +8,9 @@ for (let i = 0; i < pipeSizes.length; i++) {
 
   const sizeCell = makeEl("th", "", "\u00D8 " + pipe.size + " mm");
   sizeCell.scope = "row";
-  sizeCell.appendChild(makeEl("small", "", pipe.use));
   row.appendChild(sizeCell);
 
   row.appendChild(makeEl("td", "nowrap", formatPrice(pipe.perMeter)));
-  row.appendChild(makeEl("td", "nowrap", formatPrice(pipe.perMeter * 4)));
 
   const stockCell = document.createElement("td");
   if (pipe.inStock) {
@@ -25,14 +23,18 @@ for (let i = 0; i < pipeSizes.length; i++) {
 }
 
 
+const calcForm = document.getElementById("calc-form");
 const sizeSelect = document.getElementById("calc-size");
 const lengthInput = document.getElementById("calc-length");
-const reserveBox = document.getElementById("calc-reserve");
 const lengthError = document.getElementById("calc-length-error");
 const resultBox = document.getElementById("calc-result");
+const resultGrid = document.getElementById("calc-grid");
 const addButton = document.getElementById("calc-add");
 
-let pipesNeeded = 0;
+const MAX_METERS = 500;
+const START_TEXT = "Choose a size, enter the length and press Calculate.";
+
+let metersToAdd = 0;
 
 for (let i = 0; i < pipeSizes.length; i++) {
   if (pipeSizes[i].inStock) {
@@ -52,29 +54,42 @@ function findPipe(size) {
   return null;
 }
 
+// The price is simply: price of 1 meter x number of meters (for example 1412 x 6 = 8472)
+function calcPrice(meters, perMeter) {
+  return perMeter * meters;
+}
+
+function resetResult(message) {
+  resultBox.textContent = message;
+  resultGrid.hidden = true;
+  addButton.disabled = true;
+  metersToAdd = 0;
+}
+
 function showLengthError(message) {
   lengthInput.classList.add("is-invalid");
   lengthInput.setAttribute("aria-invalid", "true");
   lengthError.textContent = message;
-  resultBox.textContent = "Enter a correct length to see the result.";
-  addButton.disabled = true;
-  pipesNeeded = 0;
+  resetResult("Enter a correct length to see the price.");
 }
 
 function calculate() {
   const text = lengthInput.value.trim();
-  const length = Number(text);
-
   if (text === "") {
-    showLengthError("Enter the length of your pipe route.");
+    showLengthError("Enter the length in meters.");
     return;
   }
-  if (isNaN(length) || length <= 0) {
-    showLengthError("The length must be a number greater than 0.");
+  if (!/^\d+$/.test(text)) {
+    showLengthError("Use whole meters, for example 6.");
     return;
   }
-  if (length > 500) {
-    showLengthError("For more than 500 m please call us, we will make an offer.");
+  const meters = Number(text);
+  if (meters < 1) {
+    showLengthError("The length must be at least 1 meter.");
+    return;
+  }
+  if (meters > MAX_METERS) {
+    showLengthError("For more than " + MAX_METERS + " m please call us, we will make an offer.");
     return;
   }
 
@@ -82,52 +97,58 @@ function calculate() {
   lengthInput.removeAttribute("aria-invalid");
   lengthError.textContent = "";
 
-  let meters = length;
-  if (reserveBox.checked) {
-    meters = length * 1.1;
-  }
-  pipesNeeded = Math.ceil(meters / 4);
   const pipe = findPipe(Number(sizeSelect.value));
-  const price = pipesNeeded * 4 * pipe.perMeter;
+  const total = calcPrice(meters, pipe.perMeter);
+  metersToAdd = meters;
 
-  resultBox.textContent = "You need " + pipesNeeded + " pipe" + (pipesNeeded === 1 ? "" : "s") +
-    " of 4 m (" + pipesNeeded * 4 + " m in total). Price: " + formatPrice(price) + ".";
+  resultBox.textContent = formatPrice(pipe.perMeter) + " \u00D7 " + meters + " m = " + formatPrice(total);
+  document.getElementById("out-per").textContent = formatPrice(pipe.perMeter);
+  document.getElementById("out-meters").textContent = meters + " m";
+  document.getElementById("out-price").textContent = formatPrice(total);
+  resultGrid.hidden = false;
+  $(resultGrid).stop(true, true).hide().fadeIn(200);
   addButton.disabled = false;
 }
 
-lengthInput.addEventListener("input", calculate);
-sizeSelect.addEventListener("change", function () {
-  if (lengthInput.value !== "") {
+// the result updates while typing, and also on the Calculate button or Enter
+calcForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  calculate();
+});
+lengthInput.addEventListener("input", function () {
+  if (lengthInput.value.trim() === "") {
+    lengthInput.classList.remove("is-invalid");
+    lengthError.textContent = "";
+    resetResult(START_TEXT);
+  } else {
     calculate();
   }
 });
-reserveBox.addEventListener("change", function () {
-  if (lengthInput.value !== "") {
+sizeSelect.addEventListener("change", function () {
+  if (lengthInput.value.trim() !== "") {
     calculate();
   }
 });
 
 addButton.addEventListener("click", function () {
-  if (pipesNeeded === 0) {
+  if (metersToAdd === 0) {
     return;
   }
   const pipe = findPipe(Number(sizeSelect.value));
-  const message = addToCart({
+  const result = addToCart({
     id: 1000 + pipe.size,
-    name: "PPR pipe PN20 \u00D8" + pipe.size + " mm, 4 m length",
-    price: pipe.perMeter * 4,
-    unit: "pcs",
-    max: 100,
+    name: "PPR pipe PN20 \u00D8" + pipe.size + " mm",
+    price: pipe.perMeter,
+    unit: "m",
+    max: MAX_METERS,
     isService: false
-  }, pipesNeeded);
-  showToast(message);
+  }, metersToAdd);
+  showToast(result.message, result.atMax);
+  flyToCart(addButton, null);
+  flashButton(addButton, "Added \u2713");
 });
 
-
-
-
-
-// accordeon
+// FAQ accordion
 const accordion = document.getElementById("faq");
 for (let i = 0; i < pipeQuestions.length; i++) {
   const item = makeEl("div", "faq-item");
@@ -147,9 +168,6 @@ for (let i = 0; i < pipeQuestions.length; i++) {
   item.appendChild(answer);
   accordion.appendChild(item);
 }
-
-
-
 
 $("#faq").on("click", ".faq-question", function () {
   const button = $(this);

@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#E8EFEC">
   <title>Plumber: AmirStroy</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23B5842F'/%3E%3Ccircle cx='16' cy='16' r='10' fill='%230E5A4E'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23E8EFEC'/%3E%3C/svg%3E">
+  <script src="js/theme.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
@@ -14,11 +15,13 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container">
       <nav class="navbar navbar-expand-lg site-nav" aria-label="Main menu">
         <a class="navbar-brand" href="index.html"><span class="logo-mark" aria-hidden="true"></span>AmirStroy</a>
+        <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false"><span class="theme-icon" aria-hidden="true"></span>Dark mode</button>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
                 aria-controls="menu" aria-expanded="false" aria-label="Open menu">
           <span class="navbar-toggler-icon"></span>
@@ -29,21 +32,65 @@
           <li class="nav-item"><a class="nav-link" href="catalog.html">Catalog</a></li>
           <li class="nav-item"><a class="nav-link" href="pipes.html">PPR pipes</a></li>
           <li class="nav-item"><a class="nav-link active" href="services.html" aria-current="page">Plumber</a></li>
-          <li class="nav-item"><a class="nav-link" href="history.html">Order history</a></li>
+          <li class="nav-item"><a class="nav-link" href="history.html">Orders</a></li>
           <li class="nav-item"><a class="nav-link" href="contacts.html">Cart <span class="cart-badge" id="cart-count" hidden>0</span></a></li>
+          <li class="nav-item nav-guest"><a class="nav-link" href="login.html">Log in</a></li>
+          <li class="nav-item nav-guest"><a class="nav-link" href="signup.html">Sign up</a></li>
+          <li class="nav-item nav-user" hidden><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item nav-user" hidden><button class="nav-link nav-link-btn" type="button" id="nav-logout">Log out</button></li>
           </ul>
         </div>
       </nav>
     </div>
   </header>
 
-  <main>
+  <main id="main">
     <div class="container">
 
       <div class="page-head">
         <h1>Plumber services</h1>
-        <p>Pick a service and add it to the cart. A plumber confirms the time with you. Prices are starting prices: the final cost is agreed after a quick look, before any work begins.</p>
+        <p>Choose a service and a plumber: every plumber has his own price and rating. Click a card to see the details, rate the work and leave a comment.</p>
       </div>
+
+      <section class="block pt-0" aria-label="Plumber at work">
+        <figure class="work-scene">
+          <svg id="work-scene" viewBox="0 0 480 230" role="img" aria-labelledby="work-title">
+            <title id="work-title">An animated plumber waving hello</title>
+            <rect class="scene-floor" x="0" y="207" width="480" height="4"/>
+            <rect class="svc-pipe" x="300" y="150" width="170" height="40" rx="10"/>
+            <rect class="svc-shine" x="310" y="157" width="150" height="6" rx="3"/>
+            <rect class="art-brass" x="293" y="140" width="14" height="60" rx="4"/>
+            <rect class="art-brass" x="463" y="140" width="14" height="60" rx="4"/>
+            <line class="svc-arm" x1="110" y1="128" x2="94" y2="172" stroke-width="16" stroke-linecap="round"/>
+            <circle class="svc-skin" cx="93" cy="180" r="12"/>
+            <rect class="svc-overall" x="102" y="105" width="76" height="102" rx="24"/>
+            <rect class="art-brass" x="126" y="140" width="28" height="20" rx="5"/>
+            <g>
+              <animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="2s" repeatCount="indefinite"/>
+              <circle class="svc-skin" cx="140" cy="78" r="27"/>
+              <path class="art-brass" d="M112 72a28 28 0 0 1 56 0z"/>
+              <rect class="art-brass-dark" x="108" y="70" width="64" height="7" rx="3.5"/>
+              <circle class="svc-eye" cx="132" cy="85" r="2.5"/>
+              <circle class="svc-eye" cx="150" cy="85" r="2.5"/>
+              <path class="svc-smile" d="M131 95q9 7 18 0"/>
+            </g>
+            <line class="svc-arm" x1="172" y1="126" x2="200" y2="104" stroke-width="16" stroke-linecap="round"/>
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="0 200 104;-22 200 104;22 200 104;-22 200 104;22 200 104;0 200 104;0 200 104" keyTimes="0;0.1;0.25;0.4;0.55;0.65;1" dur="4s" repeatCount="indefinite"/>
+              <line class="svc-arm" x1="200" y1="104" x2="200" y2="62" stroke-width="16" stroke-linecap="round"/>
+              <circle class="svc-skin" cx="200" cy="50" r="15"/>
+              <circle class="svc-skin" cx="187" cy="54" r="6"/>
+            </g>
+            <g>
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.08;0.6;0.7;1" dur="4s" repeatCount="indefinite"/>
+              <rect class="svc-bubble" x="236" y="20" width="96" height="40" rx="14"/>
+              <path class="svc-bubble" d="M236 44l-14 8 16 2z"/>
+              <text class="svc-bubble-text" x="284" y="47" text-anchor="middle">Hello!</text>
+            </g>
+          </svg>
+          <figcaption>Hello! Choose a plumber and we will come to your home.</figcaption>
+        </figure>
+      </section>
 
       <section class="block pt-0" aria-labelledby="h-services">
         <h2 class="visually-hidden" id="h-services">Services</h2>
@@ -53,7 +100,7 @@
       <section class="block" aria-labelledby="h-how">
         <h2 id="h-how">How it works</h2>
         <ol class="steps">
-          <li>Choose a service and press «Book a plumber».</li>
+          <li>Choose a service and a plumber, then press «Book a plumber».</li>
           <li>Open the cart and leave your name, phone number and address.</li>
           <li>We call you, agree the time and the price, and the plumber comes.</li>
         </ol>
@@ -62,19 +109,51 @@
     </div>
   </main>
 
+  <div class="modal fade" id="service-modal" tabindex="-1" aria-labelledby="service-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content service-modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="service-modal-title"></h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="modal-text"></p>
+          <ul class="include-list" id="modal-includes"></ul>
+          <p class="hint" id="modal-time"></p>
+
+          <h3>Choose a plumber</h3>
+          <div class="plumber-list" id="modal-plumbers" role="radiogroup" aria-label="Plumber"></div>
+          <div class="modal-buy">
+            <p class="price" id="modal-price"></p>
+            <button class="btn btn-main" type="button" id="modal-book">Book a plumber</button>
+          </div>
+
+          <hr>
+          <div id="modal-reviews"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="container">
       <p class="mb-2">AmirStroy, plumbing for your home. Prices in tenge are approximate: we confirm stock and price when you order.</p>
-      <p class="mb-0 credits">Credits: product photos from Yandex Images; fonts Onest and Unbounded from Google Fonts; Bootstrap 5.3.3; jQuery 3.7.1;</p>
+      <p class="mb-0 credits">Credits: product photos from Yandex Images; fonts Onest and Unbounded (Google Fonts); Bootstrap 5.3.3; jQuery 3.7.1; AI assistant Claude (Anthropic) helped with the dark mode, accounts and code clean-up.</p>
+      <p class="mb-0 mt-2"><button class="btn btn-ghost btn-sm" type="button" id="sound-toggle" aria-pressed="true">Sound: on</button></p>
     </div>
   </footer>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
   <script src="js/cart.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/effects.js"></script>
   <script src="js/cards.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/forms.js"></script>
+  <script src="js/reviews.js"></script>
   <script src="js/services.js"></script>
 </body>
 </html>

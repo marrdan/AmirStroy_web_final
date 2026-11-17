@@ -61,7 +61,7 @@ function showHistory() {
     historyBody.appendChild(row);
   }
 
-  summary.textContent = "Orders: " + orders.length + ". Total of all orders: " + formatPrice(sum) + " (mardan helper said).";
+  summary.textContent = "Orders: " + orders.length + ". Total of all orders: " + formatPrice(sum) + ".";
   clearButton.hidden = false;
 }
 
@@ -69,6 +69,7 @@ clearButton.addEventListener("click", function () {
   $("#history-body tr").stop(true, true).fadeOut(250).promise().done(function () {
     saveOrders([]);
     showHistory();
+    showToast("Order history cleared.", false);
   });
 });
 

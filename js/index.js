@@ -30,3 +30,12 @@ for (let i = 0; i < featuredIds.length; i++) {
     }
   }
 }
+
+// A returning visitor is greeted by name; a guest is invited to create an account
+const currentUser = getCurrentUser();
+if (currentUser !== null) {
+  const welcome = document.getElementById("welcome");
+  welcome.textContent = "Welcome back, " + currentUser.name.split(" ")[0] + "!";
+  welcome.hidden = false;
+  document.getElementById("account-band").hidden = true;
+}
